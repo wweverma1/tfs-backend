@@ -8,6 +8,9 @@ The backend of the webapp TFPS which is inspired by bookmyshow. This webapp is f
 ## Start Virtual ENV
 - source venv/bin/activate
 
+## Start the server
+- python app.py
+
 ## How to commit
 Before committing any code, following codes must be run to ensure consistent formatting across branches, developer machines and successful tests -
 
