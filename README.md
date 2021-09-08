@@ -5,6 +5,9 @@ The backend of the webapp TFPS which is inspired by bookmyshow. This webapp is f
 - Install Python3.9.5
 - Install requirements by running `pip install -r requirements.txt`
 
+## Create Requirements file
+- pip3 freeze > requirements.txt
+
 ## Start Virtual ENV
 - source venv/bin/activate
 
