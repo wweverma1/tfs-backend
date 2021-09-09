@@ -49,10 +49,11 @@ def fetch_movies():
     movies = {}
     blockbuster = []
     other_movies = []
-    movies_list = db.session.query(Movie.name, Movie.description, Movie.poster_url, Movie.trailer_url,
+    movies_list = db.session.query(Movie.id, Movie.name, Movie.description, Movie.poster_url, Movie.trailer_url,
                                    Movie.lang, Movie.duration, Movie.is_blockbuster).filter(Movie.last_screening > datetime.now()).all()
     for movie in movies_list:
         movie_data = {
+            "id": movie.id,
             "name": movie.name,
             "desc": movie.description,
             "poster": movie.poster_url,
@@ -71,11 +72,12 @@ def fetch_movies():
 
 
 def fetch_movie(movie_id):
-    movie = db.session.query(Movie.name, Movie.description, Movie.poster_url, Movie.trailer_url,
+    movie = db.session.query(Movie.id, Movie.name, Movie.description, Movie.poster_url, Movie.trailer_url,
                              Movie.lang, Movie.duration).filter(Movie.id == movie_id).one_or_none()
     if not movie:
-        return "Invalid Movie ID, Unable to Fetch Details", 400
+        return "Invalid Movie ID, Unable to Fetch Movie", 400
     movie_data = {
+        "id": movie.id,
         "name": movie.name,
         "desc": movie.description,
         "poster": movie.poster_url,
@@ -87,8 +89,32 @@ def fetch_movie(movie_id):
     return jsonify(movie_data), 200
 
 
-def edit_movie():
-    return "Movie Edited", 200
+def edit_movie(movie_id):
+    movie = db.session.query(Movie).filter(Movie.id == movie_id).one_or_none()
+    if not movie:
+        return "Invalid Movie ID, Unable to Update Movie details", 400
+    try:
+        if 'name' in request.form:
+            movie.name = request.form['name']
+        if 'lang' in request.form:
+            movie.lang = request.form['lang']
+        if 'description' in request.form:
+            movie.description = request.form['description']
+        if 'duration' in request.form:
+            movie.duration = request.form['duration']
+        if 'is_blockbuster' in request.form:
+            movie.is_blockbuster = True if request.form['is_blockbuster'] == "True" else False
+        if 'poster_url' in request.form:
+            movie.poster_url = request.form['poster_url']
+        if 'trailer_url' in request.form:
+            movie.poster_url = request.form['poster_url']
+        db.session.commit()
+        return "Movie Edited", 200
+    except:
+        print(e)
+        traceback.print_exc()
+        db.session.rollback()
+        return "Couldn't Update Movie Details", 400
 
 
 def delete_movie(movie_id):
