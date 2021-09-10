@@ -7,7 +7,7 @@ from app.movies.controller import (
     edit_movie,
     delete_movie,
     add_screening,
-    fetch_screenings,
+    fetch_screening,
     delete_screening,
 )
 
@@ -23,9 +23,9 @@ movies_api.add_url_rule(rule='/movies/<int:movie_id>/edit',
                         view_func=edit_movie, methods=['PUT', ])
 movies_api.add_url_rule(
     rule='/movies/<int:movie_id>/delete', view_func=delete_movie, methods=['GET', ])
-movies_api.add_url_rule(rule='/movies/screening/add',
+movies_api.add_url_rule(rule='/movies/<int:movie_id>/screening/add',
                         view_func=add_screening, methods=['POST', ])
-movies_api.add_url_rule(rule='/movies/screening/fetch',
-                        view_func=fetch_screenings, methods=['GET', ])
-movies_api.add_url_rule(rule='/movies/screening/delete',
+movies_api.add_url_rule(rule='/movies/<int:movie_id>/screening/<int:screening_id>/fetch',
+                        view_func=fetch_screening, methods=['GET', ])
+movies_api.add_url_rule(rule='/movies/<int:movie_id>/screening/<int:screening_id>/delete',
                         view_func=delete_screening, methods=['GET', ])

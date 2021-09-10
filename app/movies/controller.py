@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import date, datetime
 
 # Standard library imports
 import json
+import pandas as pd
 import traceback
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -17,10 +18,12 @@ from app import (
 
 from app.movies.models import(
     Movie,
+    Screening,
 )
 
 from app.movies.validators import(
     CreateMovieSchema,
+    CreateScreeningSchema,
 )
 
 
@@ -50,8 +53,9 @@ def fetch_movies():
     blockbuster = []
     other_movies = []
     movies_list = db.session.query(Movie.id, Movie.name, Movie.description, Movie.poster_url, Movie.trailer_url,
-                                   Movie.lang, Movie.duration, Movie.is_blockbuster).filter(Movie.last_screening > datetime.now()).all()
+                                   Movie.lang, Movie.duration, Movie.is_blockbuster).filter(Movie.last_screening_timing > datetime.now()).all()
     for movie in movies_list:
+        next_screening = db.session.query(Screening.timing).filter(Screening.movie_id == movie.id, Screening.timing>datetime.now()).order_by(Screening.timing).first()
         movie_data = {
             "id": movie.id,
             "name": movie.name,
@@ -59,8 +63,8 @@ def fetch_movies():
             "poster": movie.poster_url,
             "trailer": movie.trailer_url,
             "duration": movie.duration,
-            "lang": movie.lang
-            # "next_screening": movie.next_screening(),
+            "lang": movie.lang,
+            "next_screening": next_screening.timing if next_screening else None,
         }
         if movie.is_blockbuster == True:
             blockbuster.append(movie_data)
@@ -83,9 +87,17 @@ def fetch_movie(movie_id):
         "poster": movie.poster_url,
         "trailer": movie.trailer_url,
         "duration": movie.duration,
-        "lang": movie.lang
+        "lang": movie.lang,
     }
-    # add screenings to movie_data
+    screenings_list = db.session.query(Screening).filter(Screening.movie_id == movie_id, Screening.timing > datetime.now()).all()
+    screenings = []
+    for screening in screenings_list:
+        screening_data = {
+            "id": screening.id,
+            "timing": screening.timing,
+        }
+        screenings.append(screening_data)
+    movie_data["screenings"] = screenings
     return jsonify(movie_data), 200
 
 
@@ -110,7 +122,7 @@ def edit_movie(movie_id):
             movie.poster_url = request.form['poster_url']
         db.session.commit()
         return "Movie Edited", 200
-    except:
+    except SQLAlchemyError as e:
         print(e)
         traceback.print_exc()
         db.session.rollback()
@@ -121,8 +133,9 @@ def delete_movie(movie_id):
     movie = Movie.query.filter_by(id=movie_id).one_or_none()
     if not movie:
         return "Invalid Movie ID, Unable to delete", 400
-    # code to delete the movie, its screenings and its seats
+    # delete the movie, its screenings and its seat arrangement
     try:
+        db.session.query(Screening).filter(Screening.movie_id == movie.id).delete()
         db.session.delete(movie)
         db.session.commit()
         return "Movie Deleted", 200
@@ -133,13 +146,67 @@ def delete_movie(movie_id):
         return "Couldn't Delete Movie", 400
 
 
-def add_screening():
-    return "Screening Added", 200
+def add_screening(movie_id):
+    err = CreateScreeningSchema().validate(request.form)
+    if len(err) != 0:
+        print(err)
+        return json.dumps(err), 400
+
+    timing = request.form['timing']
+    
+    # if timing < datetime.now():
+    #     return "Screening time should be after current time", 400
+
+    movie = db.session.query(Movie).filter(Movie.id == movie_id).one_or_none()
+    if not movie:
+        return "Invalid Movie ID, Unable to add Screening", 400
+    screening = Screening.create(movie_id, timing)
+    if not screening:
+        return "Error creating Screening", 400
+    try:
+        if (movie.last_screening_timing is None or screening.timing > movie.last_screening_timing):
+            movie.last_screening_id = screening.id
+            movie.last_screening_timing = screening.timing
+        db.session.commit()
+        return jsonify({"id": screening.id}), 200
+    except SQLAlchemyError as e:
+        print(e)
+        traceback.print_exc()
+        db.session.rollback()
+        return "Couldn't Update Movie Details", 400
 
 
-def fetch_screenings():
-    return "Screenings Fetched", 200
+def fetch_screening(movie_id, screening_id):
+    movie = db.session.query(Movie.id).filter(Movie.id == movie_id).one_or_none()
+    if not movie:
+        return "Invalid Movie ID, Unable to add Screening", 400
+    screening = db.session.query(Screening).filter(Screening.movie_id == movie.id, Screening.id == screening_id).one_or_none()
+    screening_data = {
+        "id": screening.id,
+        "timing": screening.timing
+    }
+    return screening_data, 200
 
 
-def delete_screening():
-    return "Screening Deleted", 200
+def delete_screening(movie_id, screening_id):
+    screening = Screening.query.filter_by(id=screening_id).one_or_none()
+    if not screening:
+        return "Invalid Screening ID, Unable to delete", 400
+    try:
+        movie = db.session.query(Movie).filter(Movie.id == movie_id).one_or_none()
+        screenings = db.session.query(Screening).filter(Screening.movie_id == movie.id).order_by(Screening.timing).all()
+        if movie.last_screening_id == screening.id:
+            if len(screenings)==1:
+                movie.last_screening_id = None
+                movie.last_screening_timing = None
+            else:
+                movie.last_screening_id = screenings[-2].id
+                movie.last_screening_timing = screenings[-2].timing
+        db.session.delete(screening)
+        db.session.commit()
+        return "Screening Deleted", 200
+    except SQLAlchemyError as e:
+        print(e)
+        traceback.print_exc()
+        db.session.rollback()
+        return "Couldn't delete Screening", 400

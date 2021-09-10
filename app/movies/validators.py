@@ -17,3 +17,9 @@ class CreateMovieSchema(Schema):
     is_blockbuster = fields.Boolean(required=True)
     poster_url = fields.String(required=False)
     trailer_url = fields.String(required=False)
+
+
+class CreateScreeningSchema(Schema):
+    class Meta:
+        unknown = INCLUDE
+    timing = fields.DateTime(required=True)
