@@ -25,7 +25,8 @@ class Movie(db.Model):
     trailer_url = db.Column(db.Text)
     duration = db.Column(db.Integer)
     is_blockbuster = db.Column(db.Boolean)
-    last_screening_id = db.Column(db.Integer, db.ForeignKey(f'{SCHEMA_NAME}.screening.id'))
+    last_screening_id = db.Column(
+        db.Integer, db.ForeignKey(f'{SCHEMA_NAME}.screening.id'))
     last_screening_timing = db.Column(db.DateTime)
 
     @staticmethod
@@ -57,7 +58,8 @@ class Screening(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime)
-    movie_id = db.Column(db.Integer, db.ForeignKey(f'{SCHEMA_NAME}.movie.id'), nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey(
+        f'{SCHEMA_NAME}.movie.id'), nullable=False)
     timing = db.Column(db.DateTime)
 
     @staticmethod
@@ -76,4 +78,3 @@ class Screening(db.Model):
             traceback.print_exc()
             db.session.rollback()
             return False
-    
