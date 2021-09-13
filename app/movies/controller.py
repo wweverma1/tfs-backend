@@ -1,8 +1,7 @@
-from datetime import date, datetime
+from datetime import datetime
 
 # Standard library imports
 import json
-import pandas as pd
 import traceback
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -16,12 +15,12 @@ from app import (
     db,
 )
 
-from app.movies.models import(
+from app.movies.models import (
     Movie,
     Screening,
 )
 
-from app.movies.validators import(
+from app.movies.validators import (
     CreateMovieSchema,
     CreateScreeningSchema,
 )
@@ -55,7 +54,8 @@ def fetch_movies():
     movies_list = db.session.query(Movie.id, Movie.name, Movie.description, Movie.poster_url, Movie.trailer_url,
                                    Movie.lang, Movie.duration, Movie.is_blockbuster).filter(Movie.last_screening_timing > datetime.now()).all()
     for movie in movies_list:
-        next_screening = db.session.query(Screening.timing).filter(Screening.movie_id == movie.id, Screening.timing>datetime.now()).order_by(Screening.timing).first()
+        next_screening = db.session.query(Screening.timing).filter(
+            Screening.movie_id == movie.id, Screening.timing > datetime.now()).order_by(Screening.timing).first()
         movie_data = {
             "id": movie.id,
             "name": movie.name,
@@ -66,7 +66,7 @@ def fetch_movies():
             "lang": movie.lang,
             "next_screening": next_screening.timing if next_screening else None,
         }
-        if movie.is_blockbuster == True:
+        if movie.is_blockbuster is True:
             blockbuster.append(movie_data)
         else:
             other_movies.append(movie_data)
@@ -89,7 +89,8 @@ def fetch_movie(movie_id):
         "duration": movie.duration,
         "lang": movie.lang,
     }
-    screenings_list = db.session.query(Screening).filter(Screening.movie_id == movie_id, Screening.timing > datetime.now()).all()
+    screenings_list = db.session.query(Screening).filter(
+        Screening.movie_id == movie_id, Screening.timing > datetime.now()).all()
     screenings = []
     for screening in screenings_list:
         screening_data = {
@@ -135,7 +136,8 @@ def delete_movie(movie_id):
         return "Invalid Movie ID, Unable to delete", 400
     # delete the movie, its screenings and its seat arrangement
     try:
-        db.session.query(Screening).filter(Screening.movie_id == movie.id).delete()
+        db.session.query(Screening).filter(
+            Screening.movie_id == movie.id).delete()
         db.session.delete(movie)
         db.session.commit()
         return "Movie Deleted", 200
@@ -153,7 +155,7 @@ def add_screening(movie_id):
         return json.dumps(err), 400
 
     timing = request.form['timing']
-    
+
     # if timing < datetime.now():
     #     return "Screening time should be after current time", 400
 
@@ -177,10 +179,12 @@ def add_screening(movie_id):
 
 
 def fetch_screening(movie_id, screening_id):
-    movie = db.session.query(Movie.id).filter(Movie.id == movie_id).one_or_none()
+    movie = db.session.query(Movie.id).filter(
+        Movie.id == movie_id).one_or_none()
     if not movie:
         return "Invalid Movie ID, Unable to add Screening", 400
-    screening = db.session.query(Screening).filter(Screening.movie_id == movie.id, Screening.id == screening_id).one_or_none()
+    screening = db.session.query(Screening).filter(
+        Screening.movie_id == movie.id, Screening.id == screening_id).one_or_none()
     screening_data = {
         "id": screening.id,
         "timing": screening.timing
@@ -193,10 +197,12 @@ def delete_screening(movie_id, screening_id):
     if not screening:
         return "Invalid Screening ID, Unable to delete", 400
     try:
-        movie = db.session.query(Movie).filter(Movie.id == movie_id).one_or_none()
-        screenings = db.session.query(Screening).filter(Screening.movie_id == movie.id).order_by(Screening.timing).all()
+        movie = db.session.query(Movie).filter(
+            Movie.id == movie_id).one_or_none()
+        screenings = db.session.query(Screening).filter(
+            Screening.movie_id == movie.id).order_by(Screening.timing).all()
         if movie.last_screening_id == screening.id:
-            if len(screenings)==1:
+            if len(screenings) == 1:
                 movie.last_screening_id = None
                 movie.last_screening_timing = None
             else:

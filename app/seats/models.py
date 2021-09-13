@@ -11,17 +11,20 @@ from app import (
     SCHEMA_NAME,
 )
 
+
 class Seat(db.Model):
     __table_args__ = ({"schema": SCHEMA_NAME})
     __tablename__ = 'seat'
 
     id = db.Column(db.Integer, primary_key=True)
-    seat_number = id = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime)
+    seat_number = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey(f'{SCHEMA_NAME}.user.id'))
     movie_id = db.Column(db.Integer, db.ForeignKey(f'{SCHEMA_NAME}.movie.id'))
-    screening_id = db.Column(db.Integer, db.ForeignKey(f'{SCHEMA_NAME}.screening.id'))
-    booking_id = db.Column(db.Integer, db.ForeignKey(f'{SCHEMA_NAME}.booking.id'))
-    created_at = db.Column(db.DateTime)
+    screening_id = db.Column(
+        db.Integer, db.ForeignKey(f'{SCHEMA_NAME}.screening.id'))
+    booking_id = db.Column(
+        db.Integer, db.ForeignKey(f'{SCHEMA_NAME}.booking.id'))
 
     @staticmethod
     def book_seat(seat_number=None, user_id=None, movie_id=None, screening_id=None, booking_id=None):

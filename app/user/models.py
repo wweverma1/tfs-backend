@@ -13,7 +13,7 @@ from app import (
 
 
 class User(db.Model):
-    __table_args__ = ({"Schema": SCHEMA_NAME})
+    __table_args__ = ({"schema": SCHEMA_NAME})
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
