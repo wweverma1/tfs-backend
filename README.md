@@ -18,5 +18,5 @@ The backend of the webapp TFPS which is inspired by bookmyshow. This webapp is f
 Before committing any code, following codes must be run to ensure consistent formatting across branches, developer machines and successful tests -
 
 - Auto formatting by running `autopep8 --in-place --recursive .`
-- Check for remaining formatting issues by running `flake8 --exclude="venv/" .` (To be fixed manually)
+- Check for remaining formatting issues by running `flake8 .` (To be fixed manually)
 - Run unit tests to ensure that codebase functions as expected - `python -m pytest`

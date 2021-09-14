@@ -29,7 +29,8 @@ class Booking(db.Model):
     number_seats = db.Column(db.Integer)
 
     @staticmethod
-    def create_booking(user_id=None, user_name=None, movie_id=None, movie_name=None, screening_id=None, screening_time=None, number_seats=None):
+    def create_booking(user_id=None, user_name=None, movie_id=None, movie_name=None,
+                       screening_id=None, screening_time=None, number_seats=None):
         try:
             booking = Booking(
                 created_at=datetime.now(),
