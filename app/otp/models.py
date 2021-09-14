@@ -29,16 +29,14 @@ class OTP(db.Model):
     @staticmethod
     def generate_otp(user_id=None):
         try:
-            size = 6
-            code = ''.join([random.choice(string.ascii_uppercase +
-                                          string.ascii_lowercase +
-                                          string.digits)
-                            for n in range(size)])
+            otp_size = 6
+            code = ''.join([random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits)
+                           for n in range(otp_size)])
             otp = OTP(
                 created_at=datetime.now(),
                 created_for=user_id,
                 otp=code,
-                expiry=datetime.now()+timedelta(minutes=10),
+                expiry=datetime.now() + timedelta(minutes=10),
             )
             db.session.add(otp)
             db.session.commit()

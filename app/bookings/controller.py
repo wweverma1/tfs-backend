@@ -81,7 +81,7 @@ def create_booking():
     number_booked_seats = len(booked_seats)
     booked_seats_numbers = [
         booked_seat.seat_number for booked_seat in booked_seats]
-    if number_booked_seats+number_seats > user_seat_limit:
+    if number_booked_seats + number_seats > user_seat_limit:
         return "Seat Limited Exceeded, Unable to create Booking", 400
     for seat in seats:
         if seat in booked_seats_numbers:

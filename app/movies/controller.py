@@ -52,7 +52,8 @@ def fetch_movies():
     blockbuster = []
     other_movies = []
     movies_list = db.session.query(Movie.id, Movie.name, Movie.description, Movie.poster_url, Movie.trailer_url,
-                                   Movie.lang, Movie.duration, Movie.is_blockbuster).filter(Movie.last_screening_timing > datetime.now()).all()
+                                   Movie.lang, Movie.duration, Movie.is_blockbuster)\
+        .filter(Movie.last_screening_timing > datetime.now()).all()
     for movie in movies_list:
         next_screening = db.session.query(Screening.timing).filter(
             Screening.movie_id == movie.id, Screening.timing > datetime.now()).order_by(Screening.timing).first()

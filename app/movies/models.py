@@ -30,7 +30,8 @@ class Movie(db.Model):
     last_screening_timing = db.Column(db.DateTime)
 
     @staticmethod
-    def create(name=None, lang=None, description=None, duration=None, is_blockbuster=None, poster_url=None, trailer_url=None):
+    def create(name=None, lang=None, description=None, duration=None,
+               is_blockbuster=None, poster_url=None, trailer_url=None):
         try:
             movie = Movie(
                 created_at=datetime.now(),
