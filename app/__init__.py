@@ -21,13 +21,14 @@ SCHEMA_NAME = os.getenv("SCHEMA_NAME")
 from app.movies.routes import movies_api
 from app.home.routes import home_api
 from app.bookings.routes import bookings_api
-# from app.otp.routes import otp_api
+from app.otp.routes import otp_api
 # from app.seats.routes import seats_api
 # from app.user.routes import user_api
 
 app.register_blueprint(bookings_api)
 app.register_blueprint(home_api)
 app.register_blueprint(movies_api)
+app.register_blueprint(otp_api)
 
 from app.utils.app_functions import (
     before_request,
