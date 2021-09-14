@@ -16,7 +16,7 @@ from app import (
 
 
 class OTP(db.Model):
-    __table_args__ = ({"Schema": SCHEMA_NAME})
+    __table_args__ = ({"schema": SCHEMA_NAME})
     __tablename__ = 'otp'
 
     id = db.Column(db.Integer, primary_key=True)
