@@ -12,6 +12,13 @@ from email.mime.text import MIMEText
 # Local app specific imports
 from app import app
 
+from app.utils.email_templates import (
+    email_verification_template_p1,
+    email_verification_template_p2,
+    forgot_password_template_p1,
+    forgot_password_template_p2,
+)
+
 
 @app.before_request
 def before_request():
@@ -32,13 +39,8 @@ def serve_otp_signup_email(receiver_address, otp):
     sender_address = os.getenv("SMTP_USERNAME")
     sender_pass = os.getenv("SMTP_PASSWORD")
 
-    mail_content = """<h1>𝓗𝓮𝓵𝓵𝓸</h1><h3>Use the one time password given below to verify your acccount.</h3>
-                      <h3 style="display:inline;">One Time Password: </h3>
-                      <h2 style="color:red; display:inline; letter-spacing: 10px;">""" + \
-        str(otp) + """</h2><br><h3>Its valid only for 10 minutes.</h3><br>
-                      <h3>TFS<br>IIT Kharagpur</h3>
-                      <img src="https://static.toiimg.com/thumb/msid-67397064,width-1200,height-900,resizemode-4/.jpg"
-                      alt="TFS LOGO" height="200px" width="200px">"""
+    mail_content = email_verification_template_p1 + \
+        str(otp) + email_verification_template_p2
 
     # Setup the MIME
     message = MIMEMultipart()
@@ -64,13 +66,8 @@ def serve_otp_password_email(receiver_address, otp):
     sender_address = os.getenv("SMTP_USERNAME")
     sender_pass = os.getenv("SMTP_PASSWORD")
 
-    mail_content = """<h1>𝓗𝓮𝓵𝓵𝓸</h1><h3>Use the one time password given below to reset your password.</h3>
-                      <h3 style="display:inline;">One Time Password: </h3>
-                      <h2 style="color:red; display:inline; letter-spacing: 10px;">""" + \
-        str(otp) + """</h2><br><h3>Its valid only for 10 minutes.</h3><br>
-                      <h3>TFS<br>IIT Kharagpur</h3>
-                      <img src="https://static.toiimg.com/thumb/msid-67397064,width-1200,height-900,resizemode-4/.jpg"
-                      alt="TFS LOGO" height="200px" width="200px">"""
+    mail_content = forgot_password_template_p1 + \
+        str(otp) + forgot_password_template_p2
 
     # Setup the MIME
     message = MIMEMultipart()

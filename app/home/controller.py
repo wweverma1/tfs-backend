@@ -1,2 +1,7 @@
 def home():
-    return "Welcome to TFS APIs", 200
+    welcome_message = """
+                        Welcome to TFS APIs 🙏\n
+                        GitHub Repository Link : https://github.com/wweverma1/tfs-backend \n
+                        Made with ❤️ by Aditya Verma
+                    """
+    return welcome_message, 200

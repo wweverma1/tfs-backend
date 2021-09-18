@@ -21,18 +21,20 @@ class User(db.Model):
     status = db.Column(db.Boolean, nullable=True)
     user_name = db.Column(db.String(100), nullable=True)
     email = db.Column(db.String(30))
-    phone = db.Column(db.Integer, nullable=True)
+    phone = db.Column(db.String(10), unique=True, nullable=True)
     roll_number = db.Column(db.String(10), nullable=True)
-    pswd = db.Column(db.String(30), nullable=True)
+    pswd = db.Column(db.LargeBinary)
     number_booking = db.Column(db.Integer, nullable=True)
     notifications = db.Column(db.Boolean, nullable=True)
 
     @staticmethod
-    def create_user(email=None):
+    def create_user(email=None, password=None):
         try:
             user = User(
                 created_at=datetime.now(),
-                email=email
+                status=None,
+                email=email,
+                pswd=password,
             )
             db.session.add(user)
             db.session.commit()
