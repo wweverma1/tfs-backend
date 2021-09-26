@@ -69,8 +69,7 @@ def fetch_movies():
         }
         if movie.is_blockbuster is True:
             blockbuster.append(movie_data)
-        else:
-            other_movies.append(movie_data)
+        other_movies.append(movie_data)
     movies["blockbuster"] = blockbuster
     movies["other_movies"] = other_movies
     return jsonify(movies), 200
