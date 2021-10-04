@@ -1,6 +1,9 @@
 # tfs-backend
 The backend of the webapp TFPS which is inspired by bookmyshow. This webapp is for TFS, IIT KGP so that the students can see upcoming movies and book tickets for it.
 
+## Deployed on Heroku
+[View](https://tfs-backend.herokuapp.com)
+
 ## Setup
 - Install Python3.9.5
 - Install requirements by running `pip install -r requirements.txt`
