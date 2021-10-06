@@ -146,7 +146,7 @@ def cancel_booking(booking_id):
         user.number_booking -= 1
         db.session.delete(seats)
         db.session.commit()
-        return "Booking Cancelled", 400
+        return "Booking Cancelled", 200
     except SQLAlchemyError as e:
         print(e)
         traceback.print_exc()
